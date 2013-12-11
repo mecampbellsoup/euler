@@ -48,7 +48,7 @@ end
 start_time = Time.now
 
 # I can start from the top (e.g. 100 in the 2-digit case) and return the first palindrome
-factor_digits = 3
+factor_digits = 2
 
 top = ([9] * factor_digits).join.to_i**2
 bottom = ([9] * (factor_digits - 1)).join.to_i
@@ -60,7 +60,8 @@ biggest = top.downto(bottom) do |i|
   rescue
     next
   end
-  break [p.value, p.is_biggest?(factor_digits)] if p.is_biggest?(factor_digits)
+  checker = p.is_biggest?(factor_digits)
+  break [p.value, checker] if checker
 end
 
 puts "The biggest palindrome with two #{factor_digits}-digit factors is: #{biggest.first}"

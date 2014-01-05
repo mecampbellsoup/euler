@@ -50,7 +50,7 @@ class NumChecker
   end
 
   def prime?
-    self.prime ? true : false
+    self.prime
   end
 end
 

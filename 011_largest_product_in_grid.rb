@@ -1,16 +1,5 @@
 require 'pry'
 
-class Element
-  # each element needs to know about its neighbors in each direction
-  # class variable that keeps track of the largest product as we go through the grid
-  attr_accessor :right, :down, :diag_down_left, :diag_down_right
-  attr_reader :value
-
-  def initialize(value)
-    @value = value.to_i
-  end
-end
-
 # In the 20×20 grid below, four numbers along a diagonal line have been marked in red.
 
 grid =   "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
@@ -38,10 +27,87 @@ grid =   "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
 
 # What is the greatest product of four adjacent numbers in the same direction (up, down, left, right, or diagonally) in the 20×20 grid?
 
-# First make each number an instance of Element
+# First read-in the data into a two-dimensional array
+grid_array = grid.split(" ").map { |i| i.to_i }.each_slice(20).to_a
+
+
+################################################################################
+### NOTE: For all of these, i refers to row index & j refers to column index ###
+################################################################################
+
+# Check all the horizontal products
+
+horiz_max = 0
+for i in (0..grid_array.size-1) do 
+  for j in (0..grid_array.size-4) do
+    product = grid_array[i].slice(j, 4).inject(:*)
+    horiz_max = product if product > horiz_max
+  end
+end
+
+# Check all the vertical products
+
+vert_max = 0
+for i in (0..grid_array.size-4) do 
+  for j in (0..grid_array.size-1) do
+    values = []
+    values.push(grid_array[i][j], grid_array[i+1][j], grid_array[i+2][j], grid_array[i+3][j]).compact
+    product = values.inject(:*) if values.size == 4
+    vert_max = product if product > vert_max
+  end
+end
+
+# Check all the diag down right products
+
+diag_down_right_max = 0
+for i in (0..grid_array.size-4) do 
+  for j in (0..grid_array.size-4) do
+    values = []
+    values.push(grid_array[i][j], grid_array[i+1][j+1], grid_array[i+2][j+2], grid_array[i+3][j+3]).compact
+    product = values.inject(:*) if values.size == 4
+    diag_down_right_max = product if product > diag_down_right_max
+  end
+end
+
+# Check all the diag down left products
+
+diag_down_left_max = 0
+for i in (0..grid_array.size-4) do 
+  for j in (0..grid_array.size-4) do
+    values = []
+    values.push(grid_array[i][j], grid_array[i+1][j-1], grid_array[i+2][j-2], grid_array[i+3][j-3]).compact
+    product = values.inject(:*) if values.size == 4
+    diag_down_left_max = product if product > diag_down_left_max
+  end
+end
+
+puts "The greatest product of four adjacent numbers in the same direction (up, down, left, right, or diagonally) in the grid above is #{[horiz_max, vert_max, diag_down_left_max, diag_down_right_max].max}!"
+
+################
+### NOT USED ###
+################
+
+=begin
+
+# Define an Element class such that each element in the grid can have knowledge of its value and its neighbors
+
+class Element
+  # each element needs to know about its neighbors in each direction
+  # class variable that keeps track of the largest product as we go through the grid
+  attr_accessor :right, :down, :diag_down_left, :diag_down_right
+  attr_reader :value
+
+  def initialize(value)
+    @value = value.to_i
+  end
+end
+
+# First read-in the data into a two-dimensional array of Elements
+
 grid_array = grid.split(" ").map { |i| Element.new(i) }.each_slice(20).to_a
 
 # Then go back through and assign each Element's neighbors
+
 grid_array.each_with_index do |row, i|
   row.each_with_index do |elem, j|
     right           = grid_array[i][j+1] if j < row.size-1
@@ -55,5 +121,4 @@ grid_array.each_with_index do |row, i|
     elem.diag_down_right = diag_down_right
   end
 end
-
-binding.pry
+=end
